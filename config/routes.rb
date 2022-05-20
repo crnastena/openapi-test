@@ -6,7 +6,18 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+
+      # gives errors
+      # mount Breaker::Engine => "/", as: :breaker
+      # mount Breaker::Engine => "/"
+
+      # works
+      # mount Breaker::Engine => "/breaker"
+
       resources :testers, only: [:index]
+
+      # works
+      mount Breaker::Engine => "/"
     end
   end
 end

@@ -1,3 +1,9 @@
+PATH
+  remote: engines/breaker
+  specs:
+    breaker (0.1.0)
+      rails (>= 7.0.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -211,6 +217,7 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap
+  breaker!
   debug
   importmap-rails
   jbuilder

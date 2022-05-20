@@ -69,3 +69,5 @@ end
 group :test do
   gem "rspec-openapi"
 end
+
+gem 'breaker', path: 'engines/breaker'
