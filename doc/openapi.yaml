@@ -1,0 +1,25 @@
+---
+openapi: 3.0.3
+info:
+  title: openapi-test
+  version: 1.0.1
+servers:
+- url: http://localhost:3000
+paths:
+  "/api/v1/testers":
+    get:
+      summary: index
+      tags:
+      - Api::V1::Tester
+      responses:
+        '200':
+          description: returns hello
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: hello
