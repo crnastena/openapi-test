@@ -1,0 +1,2 @@
+module HulloHelper
+end
