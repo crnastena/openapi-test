@@ -9,7 +9,7 @@ Rails.application.routes.draw do
 
       # gives errors
       # mount Breaker::Engine => "/", as: :breaker
-      # mount Breaker::Engine => "/"
+      mount Breaker::Engine => "/"
 
       # works
       # mount Breaker::Engine => "/breaker"
@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       resources :testers, only: [:index]
 
       # works
-      mount Breaker::Engine => "/"
+      # mount Breaker::Engine => "/"
     end
   end
 end
