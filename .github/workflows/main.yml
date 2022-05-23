@@ -25,3 +25,5 @@ jobs:
         bundler-cache: true
     - name: Run the default task
       run: bundle exec rake
+    - name: Run the default task for rspec-openapi
+      run: OPENAPI=1 bundle exec rake
