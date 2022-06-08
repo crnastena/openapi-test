@@ -28,6 +28,10 @@ end
 first_file["paths"] = combined_paths
 
 FileUtils.mkdir_p(BUILD_PATH) unless File.exist?(BUILD_PATH)
-File.write(File.join(BUILD_PATH, "combined.yaml"), first_file.to_yaml)
 
+combined_file_path = File.join(BUILD_PATH, "combined.yaml")
+
+File.write(combined_file_path, first_file.to_yaml)
+
+puts "Generated #{combined_file_path}, size: #{File.size(combined_file_path)} bytes."
 puts "========== Completed =========="
