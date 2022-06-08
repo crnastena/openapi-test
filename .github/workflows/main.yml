@@ -23,6 +23,8 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false
+    - name: Run the bundle install
+      run: bundle install
     - name: Run the default task
       run: bundle exec rake
     - name: Run the rspec-openapi task
