@@ -1,0 +1,114 @@
+inherit_from:
+  - https://raw.githubusercontent.com/thoughtbot/guides/main/ruby/.rubocop.yml
+
+require:
+  - rubocop-rails
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.0.3
+  NewCops: enable
+
+# Rails/UnknownEnv:
+#   Environments:
+#     - production
+#     - development
+#     - test
+#     - staging
+
+### Layout ###
+Layout/AccessModifierIndentation:
+  Description: >-
+    Bare access modifiers (those not applying to specific methods) should be indented
+    as deep as method definitions, or as deep as the class/module keyword, depending on configuration.
+  StyleGuide: "https://github.com/rubocop/ruby-style-guide#access-modifiers-indentation"
+  Enabled: false
+
+Layout/EmptyLineAfterMagicComment:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  Description: "This cop checks if empty lines around the bodies of classes match the configuration."
+  StyleGuide: "https://github.com/rubocop/ruby-style-guide#empty-lines-around-bodies"
+  Enabled: false
+
+Layout/EmptyLinesAroundModuleBody:
+  Description: "This cop checks if empty lines around the bodies of modules match the configuration."
+  StyleGuide: "https://github.com/rubocop/ruby-style-guide#empty-lines-around-bodies"
+  Enabled: false
+
+Layout/LineLength:
+  Description: "Limit lines to 120 characters."
+  StyleGuide: "https://github.com/rubocop/ruby-style-guide#max-line-length"
+  Max: 120
+
+### Metrics ###
+Metrics/BlockLength:
+  Description: >-
+    This cop checks if the length of a block exceeds some maximum value.
+    Comment lines can optionally be ignored.
+    The maximum allowed length is configurable.
+    The cop can be configured to ignore blocks passed to certain methods.
+    
+    You can set literals you want to fold with `CountAsOne`.
+    Available are: 'array', 'hash', and 'heredoc'.
+    Each literal will be counted as one line regardless of its actual size.
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Description: >-
+    This cop tries to produce a complexity score that's a measure of the complexity
+    the reader experiences when looking at a method.
+    For that reason it considers `when` nodes as something that
+    doesn't add as much complexity as an `if` or a `&&`.
+    Except if it's one of those special `case`/`when` constructs where there's no expression after `case`.
+    Then the cop treats it as an `if`/`elsif`/`elsif`… and lets all the `when` nodes count.
+    In contrast to the CyclomaticComplexity cop, this cop considers `else` nodes as adding complexity.
+  Enabled: false
+
+### RSpec ###
+RSpec/ExampleLength:
+  Description: >-
+    Checks for long examples.
+    A long example is usually more difficult to understand.
+    Consider extracting out some behaviour, e.g. with a `let` block, or a helper method.
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Description: >-
+    Checks if example groups contain too many `let` and `subject` calls.
+    This cop is configurable using the `Max` option and the `AllowSubject`
+    which will configure the cop to only register offenses on calls to `let` and not calls to `subject`.
+  Enabled: false
+
+# We need to have multiple expectations to have faster tests
+RSpec/MultipleExpectations:
+  Description: "Checks if examples contain too many `expect` calls."
+  Enabled: false
+
+RSpec/NestedGroups:
+  Description: "Checks for nested example groups."
+  Enabled: false
+
+### Style ###
+Style/ClassAndModuleChildren:
+  Description: "Checks style of children classes and modules."
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Description: >-
+    Add the frozen_string_literal comment to the top of files
+    to help transition from Ruby 2.3.0 to Ruby 3.0.
+  Enabled: true
+
+Naming/VariableNumber:
+  Enabled: false
+
+# Supports --auto-correct
+Rails/RedundantPresenceValidationOnBelongsTo:
+  Description: Checks for redundant presence validation on belongs_to association.
+  Enabled: false
+  SafeAutoCorrect: false
+  VersionAdded: '2.13'
+

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -6,18 +7,24 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-
       # gives errors
-      # mount Breaker::Engine => "/", as: :breaker
-      mount Breaker::Engine => "/"
+      # mount Perk::Engine => "/", as: :breaker
+      # mount Perk::Engine => "/"
 
       # works
-      # mount Breaker::Engine => "/breaker"
+      mount Perk::Engine => "/perk"
 
+      namespace :capital do
+        resources :capital, only: [:index]
+      end
+
+      resources :greetings, only: [:index]
+      resources :movies, only: [:index]
       resources :testers, only: [:index]
 
-      # works
-      # mount Breaker::Engine => "/"
+      # does not work when running engine specs from project app.
+      # it still works when running just project app specs.
+      # mount Perk::Engine => "/"
     end
   end
 end

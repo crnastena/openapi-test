@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "active_support/core_ext/hash/deep_merge"
+require "fileutils"
+require "yaml"
+
+# puts "========== Generating OPENAPI files =========="
+# system("OPENAPI=1 bundle exec rspec spec/requests/api/v1")
+
+DOC_PATH = File.expand_path("../doc", __dir__)
+APP_PATH = File.join DOC_PATH, "v1"
+BUILD_PATH = File.join DOC_PATH, "_build"
+
+file_paths = Dir.glob("#{APP_PATH}/**/*").reject { |f| File.directory?(f) }
+puts "========== Found #{file_paths.size} files =========="
+combined_paths = {}
+first_file = {}
+
+file_paths.each_with_index do |file_path, index|
+  puts " => [#{index + 1}] - #{file_path}"
+  current_file = YAML.load_file(file_path)
+  first_file = current_file if index.zero?
+  combined_paths.deep_merge!(current_file["paths"])
+end
+
+first_file["paths"] = combined_paths
+
+FileUtils.mkdir_p(BUILD_PATH) unless File.exist?(BUILD_PATH)
+File.write(File.join(BUILD_PATH, "combined.yaml"), first_file.to_yaml)
+
+puts "========== Completed =========="
