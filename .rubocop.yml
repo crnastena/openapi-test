@@ -9,6 +9,8 @@ require:
 AllCops:
   TargetRubyVersion: 3.0.3
   NewCops: enable
+  Exclude:
+    - vendor/bundle/**/*
 
 # Rails/UnknownEnv:
 #   Environments:
