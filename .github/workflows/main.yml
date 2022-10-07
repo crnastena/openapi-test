@@ -29,12 +29,11 @@ jobs:
       run: |
         URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
         FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename' | egrep ".rb$")
-        if echo $FILES; then
+        if [ ! -z "$FILES" ]; then
           echo "rb file changed!!"
           rubocop --color $FILES
         else
           echo "no rb files changed!!"
-          exit 0
         fi
       if: github.event_name == 'pull_request'
     - name: Run rspec
