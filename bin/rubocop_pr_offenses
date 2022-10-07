@@ -8,7 +8,7 @@
 # puts changed_files
 
 # rubocop_results = `git ls-files -m | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs rubocop --color --force-exclusion`
-rubocop_results = `git --no-pager diff --name-only FETCH_HEAD $(git merge-base FETCH_HEAD deploy) 2>/dev/null | grep '\.rb$' | xargs rubocop --color --force-exclusion`
+rubocop_results = `git --no-pager diff --name-only FETCH_HEAD $(git merge-base FETCH_HEAD origin/deploy) 2>/dev/null | grep '\.rb$' | xargs rubocop --color --force-exclusion`
 no_offenses_detected = rubocop_results.include?("\e[32mno offenses\e[0m detected")
 
 puts rubocop_results
