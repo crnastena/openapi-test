@@ -27,14 +27,17 @@ jobs:
       run: bundle install
     - name: Run rubocop on changed files
       run: |
+        echo "starting script"
         URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
-        FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename' | egrep ".rb$")
-        if echo $FILES; then
+        FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename' | egrep ".rb$" || true)
+        echo "FILES:$FILES."
+        if [ ! -z "$FILES" ]; then
           echo "rb file changed!!"
           rubocop --color $FILES
         else
           echo "no rb files changed!!"
         fi
+      if: github.event_name == 'pull_request'
     - name: Run rspec
       run: bundle exec rspec
     - name: Run the rspec-openapi task
