@@ -31,16 +31,12 @@ jobs:
         FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename' | egrep ".rb$")
         if echo $FILES; then
           echo "rb file changed!!"
-          echo $FILES | xargs rubocop --color --force-exclusion
+          rubocop --color $FILES
         else
           echo "no rb files changed!!"
         fi
-    # - name: Run rubocop on changed files
-    #   run: ./bin/rubocop_pr_offenses
     - name: Run rspec
       run: bundle exec rspec
-    # - name: Run the default task
-    #   run: bundle exec rake
     - name: Run the rspec-openapi task
       run: OPENAPI=1 bundle exec rspec spec/ engines/perk/spec
     - name: Run the combine-openapi task
