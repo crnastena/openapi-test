@@ -34,6 +34,7 @@ jobs:
           rubocop --color $FILES
         else
           echo "no rb files changed!!"
+          exit 0
         fi
       if: github.event_name == 'pull_request'
     - name: Run rspec
