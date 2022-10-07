@@ -25,8 +25,18 @@ jobs:
         bundler-cache: false
     - name: Run the bundle install
       run: bundle install
-    - name: Run the default task
-      run: bundle exec rake
+    - name: Run rubocop on changed files
+      run: |
+        URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
+        FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename' | egrep ".rb$")
+        if echo $FILES; then
+          echo "rb file changed!!"
+          rubocop --color $FILES
+        else
+          echo "no rb files changed!!"
+        fi
+    - name: Run rspec
+      run: bundle exec rspec
     - name: Run the rspec-openapi task
       run: OPENAPI=1 bundle exec rspec spec/ engines/perk/spec
     - name: Run the combine-openapi task

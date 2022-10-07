@@ -91,3 +91,22 @@ RSpec.configure do |config|
   #   # as the one that triggered the failure.
   #   Kernel.srand config.seed
 end
+
+require "rspec/openapi"
+
+# Change `info.version`
+RSpec::OpenAPI.application_version = "1.0.2"
+
+# Set `servers` - generate servers of a schema file
+RSpec::OpenAPI.servers = [{ url: "http://localhost:3000" }]
+
+# Change the example type(s) that will generate schema
+RSpec::OpenAPI.example_types = %i[request] # controller]
+
+# Or generate multiple partial schema files, given an RSpec example
+RSpec::OpenAPI.path = lambda { |example|
+  case example.file_path
+  when %r{spec/requests/api/v1/capital} then "doc/v1/capital.yaml"
+  else "doc/v1/root.yaml"
+  end
+}
