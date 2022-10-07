@@ -25,8 +25,12 @@ jobs:
         bundler-cache: false
     - name: Run the bundle install
       run: bundle install
-    - name: Run the default task
-      run: bundle exec rake
+    - name: Run rubocop on changed files
+      run: ./bin/rubocop_pr_offenses
+    - name: Run rspec
+      run: bundle exec rspec
+    # - name: Run the default task
+    #   run: bundle exec rake
     - name: Run the rspec-openapi task
       run: OPENAPI=1 bundle exec rspec spec/ engines/perk/spec
     - name: Run the combine-openapi task

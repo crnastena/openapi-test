@@ -97,10 +97,8 @@ require "rspec/openapi"
 # Change `info.version`
 RSpec::OpenAPI.application_version = "1.0.2"
 
-# Set `server_urls` - generate servers of a schema file
-RSpec::OpenAPI.server_urls = %w[
-  http://localhost:3000
-]
+# Set `servers` - generate servers of a schema file
+RSpec::OpenAPI.servers = [{ url: "http://localhost:3000" }]
 
 # Change the example type(s) that will generate schema
 RSpec::OpenAPI.example_types = %i[request] # controller]

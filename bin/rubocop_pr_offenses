@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# changed_files = `git ls-files -m | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs rubocop --force-exclusion`.lines.map(&:chomp)
+
+# unless changed_files.empty? # E.g. an "--allow-empty" commit.
+# puts "changed_files"
+# puts changed_files
+
+rubocop_results = `git ls-files -m | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs rubocop --color --force-exclusion`
+
+no_offenses_detected = rubocop_results.include?("\e[32mno offenses\e[0m detected")
+
+puts rubocop_results
+unless no_offenses_detected
+  exit 1
+end
+exit 0
+# end
+# puts "No changed files?"
+# exit 0
