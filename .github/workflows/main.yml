@@ -35,6 +35,7 @@ jobs:
         else
           echo "no rb files changed!!"
         fi
+      if: github.event_name == "pull_request"
     - name: Run rspec
       run: bundle exec rspec
     - name: Run the rspec-openapi task
