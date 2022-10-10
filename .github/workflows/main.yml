@@ -29,8 +29,8 @@ jobs:
       run: |
         echo "starting script"
         URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
-        FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename' | egrep ".rb$" || true)
-        echo "FILES:$FILES."
+        FILE_PATTERN="(\.r[bu]$|/bundle$|/setup$|/rails$|/rake$|/?Gemfile$|/?Rakefile$|\.gemspec$|\.rake$)"
+        FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename' | egrep -i "$FILE_PATTERN")
         if [ ! -z "$FILES" ]; then
           echo "rb file changed!!"
           rubocop --color $FILES
