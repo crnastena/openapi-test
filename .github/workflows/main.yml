@@ -44,9 +44,11 @@ jobs:
           else
             FILES="$FILE_SET"
           fi
+          echo "FILES: $FILES"
           PAGE=`expr $PAGE + 1`
         done
         FILTERED_FILES=$(echo $FILES | egrep -i "$FILE_PATTERN" | tr '\n' ' ')
+        echo "Filtered files: $FILTERED_FILES"
         if [ ! -z "$FILTERED_FILES" ]; then
           echo "rb file changed!!"
           echo $FILTERED_FILES | xargs rubocop --color --force-exclusion
