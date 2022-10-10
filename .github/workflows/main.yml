@@ -28,6 +28,7 @@ jobs:
     - name: Run rubocop on changed files
       run: |
         echo "starting script"
+        jq --version
         URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
         FILE_PATTERN="(\.r[bu]$|/bundle$|/setup$|/rails$|/rake$|/?Gemfile$|/?Rakefile$|\.gemspec$|\.rake$)"
         FILES=""
@@ -36,6 +37,7 @@ jobs:
         while [ ! -z "$FILE_SET" ]
         do
           URL_WITH_PAGE="$URL?page=$PAGE"
+          echo "Processing page: $URL_WITH_PAGE"
           FILE_SET=$(curl -s -X GET -G $URL_WITH_PAGE | jq -r '.[] | .filename')
           if [ ! -z "$FILES" ]; then
             FILES="$FILES\n$FILE_SET"
