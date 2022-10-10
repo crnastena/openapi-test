@@ -28,8 +28,7 @@ jobs:
     - name: Run rubocop on changed files
       run: |
         echo "starting script"
-        jq --version
-        URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
+        URL="https://api.github.com/repos/crnastena/openapi-test/pulls/3/files"
         FILE_PATTERN="(\.r[bu]$|/bundle$|/setup$|/rails$|/rake$|/?Gemfile$|/?Rakefile$|\.gemspec$|\.rake$)"
         FILES=""
         FILE_SET="START"
@@ -37,18 +36,15 @@ jobs:
         while [ ! -z "$FILE_SET" ]
         do
           URL_WITH_PAGE="$URL?page=$PAGE"
-          echo "Processing page: $URL_WITH_PAGE"
-          FILE_SET=$(curl -s -X GET -G $URL_WITH_PAGE | jq -r '.[] | .filename')
+          FILE_SET=$(curl -s -X GET -G $URL_WITH_PAGE | jq -r '.[] | .filename' | tr '\n' ' ')
           if [ ! -z "$FILES" ]; then
-            FILES="$FILES\n$FILE_SET"
+            FILES="$FILES $FILE_SET"
           else
             FILES="$FILE_SET"
           fi
-          echo "FILES: $FILES"
           PAGE=`expr $PAGE + 1`
         done
-        FILTERED_FILES=$(echo $FILES | egrep -i "$FILE_PATTERN" | tr '\n' ' ')
-        echo "Filtered files: $FILTERED_FILES"
+        FILTERED_FILES=$(echo $FILES | tr ' ' '\n' | egrep -i "$FILE_PATTERN")
         if [ ! -z "$FILTERED_FILES" ]; then
           echo "rb file changed!!"
           echo $FILTERED_FILES | xargs rubocop --color --force-exclusion
