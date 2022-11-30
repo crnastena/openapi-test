@@ -4,12 +4,12 @@ require "net/http"
 require "json"
 require "time"
 
-@env_github_sha = ENV["GITHUB_SHA"]
-@env_github_token = ENV["GITHUB_TOKEN"]
+@env_github_sha = ENV.fetch("GITHUB_SHA", nil)
+@env_github_token = ENV.fetch("GITHUB_TOKEN", nil)
 
-@env_pr_workspace = ENV["PR_WORKSPACE"]
-@env_pr_repository = ENV["PR_REPOSITORY"]
-@env_pr_number = ENV["PR_NUMBER"]
+@env_pr_workspace = ENV.fetch("PR_WORKSPACE", nil)
+@env_pr_repository = ENV.fetch("PR_REPOSITORY", nil)
+@env_pr_number = ENV.fetch("PR_NUMBER", nil)
 @env_run_on_pr_files_only = ENV.fetch("RUN_ON_PR_FILES_ONLY", "true").to_s.casecmp("true").zero?
 @env_report_failure = ENV.fetch("REPORT_FAILURE", "false").to_s.casecmp("true").zero?
 
@@ -54,10 +54,10 @@ def update_check(id, conclusion, output)
   data = nil
   max_annotations = 50
   annotations = if output.nil?
-      []
-    else
-      output["annotations"]
-    end
+                  []
+                else
+                  output["annotations"]
+                end
 
   if annotations.size > max_annotations
     # loop over annotations
@@ -108,7 +108,7 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  puts "annotations_url: #{data["output"]["annotations_url"]}" unless data.nil?
+  puts "annotations_url: #{data['output']['annotations_url']}" unless data.nil?
 end
 
 # get list of PR files to pass to rubocop
@@ -229,7 +229,19 @@ def run
     # Print offenses
     puts output[:summary]
     annotations.each do |annotation|
-      puts "#{annotation["path"]}:#{annotation["start_line"]}:#{annotation["start_column"]}: #{annotation["message"]}\n"
+      severity = if annotation["severity"] == "convention"
+                   "C"
+                 elsif annotation["severity"] == "warning"
+                   "W"
+                 else
+                   "U"
+                 end
+      correctable = if annotation["correctable"]
+                      "[Correctable]"
+                    else
+                      ""
+                    end
+      puts "#{annotation['path']}:#{annotation['line']}:#{annotation['column']}: #{severity}: #{correctable} #{annotation['cop_name']}: #{annotation['message']}\n"
     end
 
     if conclusion == "failure"
@@ -238,10 +250,10 @@ def run
   rescue StandardError
     unless update_check_ran
       conclusion = if @env_report_failure
-          "failure"
-        else
-          "neutral"
-        end
+                     "failure"
+                   else
+                     "neutral"
+                   end
       update_check(id, conclusion, nil)
     end
 
