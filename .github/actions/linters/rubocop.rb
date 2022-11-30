@@ -151,6 +151,10 @@ def run_rubocop
   conclusion = "success"
   annotations = []
 
+  puts ">> rubocop output"
+  puts output
+  puts "<< rubocop end"
+
   # RuboCop reports the number of errors found in "offense_count"
   offense_count = output["summary"]["offense_count"]
   if offense_count != 0
@@ -225,7 +229,7 @@ def run
     # Print offenses
     puts output[:summary]
     annotations.each do |annotation|
-      puts "#{annotation["path"]}:#{annotation["start_line"]}:#{annotation["end_line"]}: #{annotation["message"]}\n"
+      puts "#{annotation["path"]}:#{annotation["start_line"]}:#{annotation["start_column"]}: #{annotation["message"]}\n"
     end
 
     if conclusion == "failure"
