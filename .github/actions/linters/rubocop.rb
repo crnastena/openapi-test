@@ -202,6 +202,8 @@ end
 # main method, that runs the whole thing
 def run
   id = create_check
+  update_check_ran = false
+
   begin
     results = run_rubocop
     conclusion = results[:conclusion]
@@ -215,6 +217,7 @@ def run
     }
 
     update_check(id, conclusion, output)
+    update_check_ran = true
 
     # Print offenses
     puts output[:summary]
@@ -226,12 +229,15 @@ def run
       raise "Rubocop found offenses"
     end
   rescue StandardError
-    conclusion = if @env_report_failure
-        "failure"
-      else
-        "neutral"
-      end
-    update_check(id, conclusion, nil)
+    unless update_check_ran
+      conclusion = if @env_report_failure
+          "failure"
+        else
+          "neutral"
+        end
+      update_check(id, conclusion, nil)
+    end
+
     raise
   end
 end
