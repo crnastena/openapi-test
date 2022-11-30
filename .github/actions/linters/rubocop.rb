@@ -43,6 +43,10 @@ def create_check
 
   path = "/repos/#{@env_pr_repository}/check-runs"
   resp = @http.post(path, body.to_json, @headers)
+
+  puts "create_check response"
+  puts resp
+
   raise resp.message if resp.code.to_i >= 300
 
   data = JSON.parse(resp.body)
@@ -57,11 +61,6 @@ def update_check(id, conclusion, output)
     else
       output["annotations"]
     end
-
-  puts "output:"
-  puts output
-  puts "annotations:"
-  puts annotations
 
   if annotations.size > max_annotations
     # loop over annotations
@@ -90,6 +89,10 @@ def update_check(id, conclusion, output)
 
       path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
       resp = @http.patch(path, body.to_json, @headers)
+
+      puts "update_check page: #{page} response"
+      puts resp
+
       raise resp.message if resp.code.to_i >= 300
 
       page += 1
@@ -106,6 +109,9 @@ def update_check(id, conclusion, output)
 
     path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
     resp = @http.patch(path, body.to_json, @headers)
+    puts "update_check response"
+    puts resp
+
     raise resp.message if resp.code.to_i >= 300
   end
 end
@@ -170,16 +176,16 @@ def run_rubocop
 
         # Create a new annotation for each error
         annotation = {
-          path: path,
-          start_line: start_line,
-          end_line: end_line,
+          "path" => path,
+          "start_line" => start_line,
+          "end_line" => end_line,
           annotation_level: annotation_level,
-          message: message,
+          "message" => message,
         }
 
         # Annotations only support start and end columns on the same line
         if start_line == end_line
-          annotation.merge({ start_column: start_column, end_column: end_column })
+          annotation.merge({ "start_column" => start_column, "end_column" => end_column })
         end
 
         annotations.push(annotation)
@@ -224,7 +230,7 @@ def run
     # Print offenses
     puts output[:summary]
     annotations.each do |annotation|
-      puts annotation # "L#{annotation['start_line']}-L#{annotation['end_line']}:#{annotation['message']}"
+      puts "#{annotation["path"]}:#{annotation["start_line"]}:#{annotation["end_line"]}: #{annotation["message"]}\n"
     end
 
     if conclusion == "failure"
