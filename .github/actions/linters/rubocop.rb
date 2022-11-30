@@ -54,10 +54,10 @@ def update_check(id, conclusion, output)
   data = nil
   max_annotations = 50
   annotations = if output.nil?
-                  []
-                else
-                  output["annotations"]
-                end
+      []
+    else
+      output["annotations"]
+    end
 
   if annotations.size > max_annotations
     # loop over annotations
@@ -108,7 +108,7 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  puts "annotations_url: #{data['output']['annotations_url']}" unless data.nil?
+  puts "annotations_url: #{data["output"]["annotations_url"]}" unless data.nil?
 end
 
 # get list of PR files to pass to rubocop
@@ -170,6 +170,9 @@ def run_rubocop
         start_column = offense["location"]["start_column"]
         end_column = offense["location"]["last_column"]
         annotation_level = @annotation_levels[severity]
+        line = offense["location"]["line"]
+        column = offense["location"]["column"]
+        correctable = offense["correctable"]
 
         conclusion = "failure" if annotation_level == "failure"
 
@@ -180,6 +183,10 @@ def run_rubocop
           "end_line" => end_line,
           annotation_level: annotation_level,
           "message" => message,
+          "line" => line,
+          "column" => column,
+          "severity" => severity,
+          "correctable" => correctable,
         }
 
         # Annotations only support start and end columns on the same line
@@ -230,18 +237,18 @@ def run
     puts output[:summary]
     annotations.each do |annotation|
       severity = if annotation["severity"] == "convention"
-                   "C"
-                 elsif annotation["severity"] == "warning"
-                   "W"
-                 else
-                   "U"
-                 end
+          "C"
+        elsif annotation["severity"] == "warning"
+          "W"
+        else
+          "U"
+        end
       correctable = if annotation["correctable"]
-                      "[Correctable]"
-                    else
-                      ""
-                    end
-      puts "#{annotation['path']}:#{annotation['line']}:#{annotation['column']}: #{severity}: #{correctable} #{annotation['cop_name']}: #{annotation['message']}\n"
+          "[Correctable]"
+        else
+          ""
+        end
+      puts "#{annotation["path"]}:#{annotation["line"]}:#{annotation["column"]}: #{severity}: #{correctable} #{annotation["cop_name"]}: #{annotation["message"]}\n"
     end
 
     if conclusion == "failure"
@@ -250,10 +257,10 @@ def run
   rescue StandardError
     unless update_check_ran
       conclusion = if @env_report_failure
-                     "failure"
-                   else
-                     "neutral"
-                   end
+          "failure"
+        else
+          "neutral"
+        end
       update_check(id, conclusion, nil)
     end
 
