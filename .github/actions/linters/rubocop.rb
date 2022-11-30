@@ -13,6 +13,9 @@ require "time"
 @env_run_on_pr_files_only = ENV.fetch("RUN_ON_PR_FILES_ONLY", "true").to_s.casecmp("true").zero?
 @env_report_failure = ENV.fetch("REPORT_FAILURE", "false").to_s.casecmp("true").zero?
 
+@owner = @env_pr_repository.split("/")[0]
+@repo = @env_pr_repository.split("/")[1]
+
 @check_name = "Rubocop"
 
 @annotation_levels = {
