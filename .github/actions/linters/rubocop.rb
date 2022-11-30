@@ -193,8 +193,6 @@ def run_rubocop
           annotation["end_column"] = end_column
         end
 
-        annotations.push(annotation)
-
         sev = case severity
               when "convention"
                 "C"
@@ -204,13 +202,16 @@ def run_rubocop
                 "U"
               end
         cor = if offense["correctable"]
-                "[Correctable]"
                 correctable_count += 1
+                "[Correctable]"
               else
                 ""
               end
 
         messages << "#{path}:#{offense['location']['line']}:#{offense['location']['column']}: #{sev}: #{cor} #{offense['cop_name']}: #{message}\n"
+
+        annotation["raw_details"] = message
+        annotations.push(annotation)
 
         count += 1
       end
