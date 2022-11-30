@@ -214,13 +214,13 @@ def run_rubocop
 
         count += 1
       end
-
-      # Print offenses
-      puts "Inspecting #{inspected_file_count} files."
-      puts "Offenses:\n\n"
-      puts messages.join("\n\n")
-      puts "#{inspected_file_count} files inspected, #{offense_count} offenses detected, #{correctable_count} offenses autocorrectable"
     end
+
+    # Print offenses
+    puts "Inspecting #{inspected_file_count} files."
+    puts "Offenses:\n\n"
+    puts messages.join("\n")
+    puts "#{inspected_file_count} files inspected, #{offense_count} offenses detected, #{correctable_count} offenses autocorrectable"
 
     conclusion = "neutral" unless @env_report_failure
   end
