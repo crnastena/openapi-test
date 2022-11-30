@@ -151,10 +151,6 @@ def run_rubocop
   conclusion = "success"
   annotations = []
 
-  puts ">> rubocop output"
-  puts output
-  puts "<< rubocop end"
-
   # RuboCop reports the number of errors found in "offense_count"
   offense_count = output["summary"]["offense_count"]
   target_file_count = output["summary"]["target_file_count"]
