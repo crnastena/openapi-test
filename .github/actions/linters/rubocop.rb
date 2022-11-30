@@ -20,7 +20,7 @@ require "time"
 
 @annotation_levels = {
   "refactor" => "notice", # "failure",
-  "convention" => "notice", # "failure",
+  "convention" => "failure", # "notice",
   "warning" => "warning",
   "error" => "failure",
   "fatal" => "failure",
