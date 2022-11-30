@@ -51,6 +51,7 @@ end
 
 # updates a check
 def update_check(id, conclusion, output)
+  data = nil
   max_annotations = 50
   annotations = if output.nil?
       []
@@ -85,6 +86,7 @@ def update_check(id, conclusion, output)
 
       path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
       resp = @http.patch(path, body.to_json, @headers)
+      data = JSON.parse(resp.body)
       raise resp.message if resp.code.to_i >= 300
 
       page += 1
@@ -101,14 +103,12 @@ def update_check(id, conclusion, output)
 
     path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
     resp = @http.patch(path, body.to_json, @headers)
-    puts "update_check response"
-    puts resp.body
     data = JSON.parse(resp.body)
-    puts "output: #{data["output"]}"
-    puts "annotations_url: #{data["output"]["annotations_url"]}"
 
     raise resp.message if resp.code.to_i >= 300
   end
+
+  puts "annotations_url: #{data["output"]["annotations_url"]}" unless data.nil?
 end
 
 # get list of PR files to pass to rubocop
