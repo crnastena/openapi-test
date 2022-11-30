@@ -6,7 +6,7 @@ on: [pull_request]
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PR_WORKSPACE: ${{ github.workspace }}
-  PR_REPOSITORY: ${{ github.reposiroty }}
+  PR_REPOSITORY: ${{ github.repository }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
   RUN_ON_PR_FILES_ONLY: true
   REPORT_FAILURE: true
