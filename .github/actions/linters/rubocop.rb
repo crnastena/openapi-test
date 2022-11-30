@@ -55,7 +55,7 @@ def update_check(id, conclusion, output)
   annotations = if output.nil?
       []
     else
-      output[:annotations]
+      output["annotations"]
     end
 
   puts "output:"
@@ -73,7 +73,8 @@ def update_check(id, conclusion, output)
       page_output = {
         title: output[:title],
         summary: output[:summary],
-        annotations: current_annotations,
+        text: output[:text],
+        "annotations" => current_annotations,
       }
       body = {
         "name" => @check_name,
@@ -213,7 +214,8 @@ def run
     output = {
       title: @check_name,
       summary: "#{count} offense(s) found",
-      annotations: annotations,
+      text: "#{count} offense(s) found (text)",
+      "annotations" => annotations,
     }
 
     update_check(id, conclusion, output)
