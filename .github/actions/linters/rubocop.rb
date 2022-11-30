@@ -54,10 +54,10 @@ def update_check(id, conclusion, output)
   data = nil
   max_annotations = 50
   annotations = if output.nil?
-      []
-    else
-      output["annotations"]
-    end
+                  []
+                else
+                  output["annotations"]
+                end
 
   if annotations.size > max_annotations
     # loop over annotations
@@ -108,7 +108,7 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  puts "annotations_url: #{data["output"]["annotations_url"]}" unless data.nil?
+  puts "annotations_url: #{data['output']['annotations_url']}" unless data.nil?
 end
 
 # get list of PR files to pass to rubocop
@@ -157,6 +157,11 @@ def run_rubocop
 
   # RuboCop reports the number of errors found in "offense_count"
   offense_count = output["summary"]["offense_count"]
+  target_file_count = output["summary"]["target_file_count"]
+  inspected_file_count = output["summary"]["inspected_file_count"]
+  messages = []
+  correctable_count = 0
+
   if offense_count != 0
     output["files"].each do |file|
       path = file["path"]
@@ -170,9 +175,6 @@ def run_rubocop
         start_column = offense["location"]["start_column"]
         end_column = offense["location"]["last_column"]
         annotation_level = @annotation_levels[severity]
-        line = offense["location"]["line"]
-        column = offense["location"]["column"]
-        correctable = offense["correctable"]
 
         conclusion = "failure" if annotation_level == "failure"
 
@@ -183,21 +185,41 @@ def run_rubocop
           "end_line" => end_line,
           annotation_level: annotation_level,
           "message" => message,
-          "line" => line,
-          "column" => column,
-          "severity" => severity,
-          "correctable" => correctable,
         }
 
         # Annotations only support start and end columns on the same line
         if start_line == end_line
-          annotation.merge({ "start_column" => start_column, "end_column" => end_column })
+          annotation["start_column"] = start_column
+          annotation["end_column"] = end_column
         end
 
         annotations.push(annotation)
 
+        sev = case severity
+              when "convention"
+                "C"
+              when "warning"
+                "W"
+              else
+                "U"
+              end
+        cor = if offense["correctable"]
+                "[Correctable]"
+                correctable_count += 1
+              else
+                ""
+              end
+
+        messages << "#{path}:#{offense['location']['line']}:#{offense['location']['column']}: #{sev}: #{cor} #{offense['cop_name']}: #{message}\n"
+
         count += 1
       end
+
+      # Print offenses
+      puts "Inspecting #{inspected_file_count} files."
+      puts "Offenses:\n\n"
+      puts messages.join("\n\n")
+      puts "#{inspected_file_count} files inspected, #{offense_count} offenses detected, #{correctable_count} offenses autocorrectable"
     end
 
     conclusion = "neutral" unless @env_report_failure
@@ -233,34 +255,16 @@ def run
     update_check(id, conclusion, output)
     update_check_ran = true
 
-    # Print offenses
-    puts output[:summary]
-    annotations.each do |annotation|
-      severity = if annotation["severity"] == "convention"
-          "C"
-        elsif annotation["severity"] == "warning"
-          "W"
-        else
-          "U"
-        end
-      correctable = if annotation["correctable"]
-          "[Correctable]"
-        else
-          ""
-        end
-      puts "#{annotation["path"]}:#{annotation["line"]}:#{annotation["column"]}: #{severity}: #{correctable} #{annotation["cop_name"]}: #{annotation["message"]}\n"
-    end
-
     if conclusion == "failure"
       raise "Rubocop found offenses"
     end
   rescue StandardError
     unless update_check_ran
       conclusion = if @env_report_failure
-          "failure"
-        else
-          "neutral"
-        end
+                     "failure"
+                   else
+                     "neutral"
+                   end
       update_check(id, conclusion, nil)
     end
 
