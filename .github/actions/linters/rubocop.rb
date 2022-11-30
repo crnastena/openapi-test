@@ -58,6 +58,11 @@ def update_check(id, conclusion, output)
       output[:annotations]
     end
 
+  puts "output:"
+  puts output
+  puts "annotations:"
+  puts annotations
+
   if annotations.size > max_annotations
     # loop over annotations
     pages = annotations.size / 50

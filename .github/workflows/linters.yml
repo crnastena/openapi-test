@@ -36,5 +36,5 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Run rubocop on changed files
         run: |
-          ruby .github/actions/linters/index.rb
+          ruby .github/actions/linters/rubocop.rb
         if: github.event_name == 'pull_request'
