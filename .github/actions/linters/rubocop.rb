@@ -256,9 +256,9 @@ def run
     update_check(id, conclusion, output)
     update_check_ran = true
 
-    if conclusion == "failure"
-      raise "Rubocop found offenses"
-    end
+    # if conclusion == "failure"
+    #   raise "Rubocop found offenses"
+    # end
   rescue StandardError
     unless update_check_ran
       conclusion = if @env_report_failure
