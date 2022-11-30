@@ -103,8 +103,9 @@ def update_check(id, conclusion, output)
     resp = @http.patch(path, body.to_json, @headers)
     puts "update_check response"
     puts resp.body
-    puts resp.body["output"]
-    puts resp.body["output"]["annotations_url"]
+    data = JSON.parse(resp.body)
+    puts "output: #{data["output"]}"
+    puts "annotations_url: #{data["output"]["annotations_url"]}"
 
     raise resp.message if resp.code.to_i >= 300
   end
