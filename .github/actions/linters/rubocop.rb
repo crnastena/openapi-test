@@ -19,8 +19,8 @@ require "time"
 @check_name = "Rubocop"
 
 @annotation_levels = {
-  "refactor" => "failure",
-  "convention" => "failure",
+  "refactor" => "notice", # "failure",
+  "convention" => "notice", # "failure",
   "warning" => "warning",
   "error" => "failure",
   "fatal" => "failure",
@@ -57,10 +57,10 @@ def update_check(id, conclusion, output)
   data = nil
   max_annotations = 50
   annotations = if output.nil?
-                  []
-                else
-                  output["annotations"]
-                end
+      []
+    else
+      output["annotations"]
+    end
 
   if annotations.size > max_annotations
     # loop over annotations
@@ -111,7 +111,7 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  puts "annotations_url: #{data['output']['annotations_url']}" unless data.nil?
+  puts "annotations_url: #{data["output"]["annotations_url"]}" unless data.nil?
 end
 
 # get list of PR files to pass to rubocop
@@ -192,22 +192,22 @@ def run_rubocop
         end
 
         sev = case severity
-              when "convention"
-                "C"
-              when "warning"
-                "W"
-              else
-                "U"
-              end
+          when "convention"
+            "C"
+          when "warning"
+            "W"
+          else
+            "U"
+          end
         cor = if offense["correctable"]
-                correctable_count += 1
-                "[Correctable]"
-              else
-                ""
-              end
+            correctable_count += 1
+            "[Correctable]"
+          else
+            ""
+          end
 
-        messages << ("#{path}:#{offense['location']['line']}:#{offense['location']['column']}: #{sev}: " +
-                     " #{cor} #{offense['cop_name']}: #{message}\n")
+        messages << ("#{path}:#{offense["location"]["line"]}:#{offense["location"]["column"]}: #{sev}: " +
+                     " #{cor} #{offense["cop_name"]}: #{message}\n")
 
         annotation["raw_details"] = message
         annotations.push(annotation)
@@ -221,7 +221,7 @@ def run_rubocop
     puts "Offenses:\n\n"
     puts messages.join("\n")
     puts "\n#{inspected_file_count} files inspected, #{offense_count} offenses detected," +
-      "#{correctable_count} offenses autocorrectable.\n"
+           "#{correctable_count} offenses autocorrectable.\n"
 
     conclusion = "neutral" unless @env_report_failure
   end
@@ -262,10 +262,10 @@ def run
   rescue StandardError
     unless update_check_ran
       conclusion = if @env_report_failure
-                     "failure"
-                   else
-                     "neutral"
-                   end
+          "failure"
+        else
+          "neutral"
+        end
       update_check(id, conclusion, nil)
     end
 
