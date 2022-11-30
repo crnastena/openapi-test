@@ -25,7 +25,7 @@ require "time"
 
 @headers = {
   "Content-Type": "application/json",
-  Accept: "application/vnd.github+json", # "application/vnd.github.antiope-preview+json",
+  Accept: "application/vnd.github+json",
   Authorization: "Bearer #{@env_github_token}",
 }
 
@@ -45,7 +45,7 @@ def create_check
   resp = @http.post(path, body.to_json, @headers)
 
   puts "create_check response"
-  puts resp
+  puts resp.body
 
   raise resp.message if resp.code.to_i >= 300
 
@@ -91,7 +91,7 @@ def update_check(id, conclusion, output)
       resp = @http.patch(path, body.to_json, @headers)
 
       puts "update_check page: #{page} response"
-      puts resp
+      puts resp.body
 
       raise resp.message if resp.code.to_i >= 300
 
@@ -110,7 +110,7 @@ def update_check(id, conclusion, output)
     path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
     resp = @http.patch(path, body.to_json, @headers)
     puts "update_check response"
-    puts resp
+    puts resp.body
 
     raise resp.message if resp.code.to_i >= 300
   end
