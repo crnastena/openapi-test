@@ -153,7 +153,6 @@ def run_rubocop
 
   # RuboCop reports the number of errors found in "offense_count"
   offense_count = output["summary"]["offense_count"]
-  target_file_count = output["summary"]["target_file_count"]
   inspected_file_count = output["summary"]["inspected_file_count"]
   messages = []
   correctable_count = 0
@@ -204,7 +203,8 @@ def run_rubocop
                 ""
               end
 
-        messages << "#{path}:#{offense['location']['line']}:#{offense['location']['column']}: #{sev}: #{cor} #{offense['cop_name']}: #{message}\n"
+        messages << ("#{path}:#{offense['location']['line']}:#{offense['location']['column']}: #{sev}: " +
+                     " #{cor} #{offense['cop_name']}: #{message}\n")
 
         annotation["raw_details"] = message
         annotations.push(annotation)
@@ -217,7 +217,8 @@ def run_rubocop
     puts "Inspecting #{inspected_file_count} files."
     puts "Offenses:\n\n"
     puts messages.join("\n")
-    puts "\n#{inspected_file_count} files inspected, #{offense_count} offenses detected, #{correctable_count} offenses autocorrectable.\n"
+    puts "\n#{inspected_file_count} files inspected, #{offense_count} offenses detected," +
+      "#{correctable_count} offenses autocorrectable.\n"
 
     conclusion = "neutral" unless @env_report_failure
   end
