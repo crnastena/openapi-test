@@ -43,10 +43,6 @@ def create_check
 
   path = "/repos/#{@env_pr_repository}/check-runs"
   resp = @http.post(path, body.to_json, @headers)
-
-  puts "create_check response"
-  puts resp.body
-
   raise resp.message if resp.code.to_i >= 300
 
   data = JSON.parse(resp.body)
@@ -91,7 +87,7 @@ def update_check(id, conclusion, output)
       resp = @http.patch(path, body.to_json, @headers)
 
       puts "update_check page: #{page} response"
-      puts resp.body
+      puts resp.body[:output]
 
       raise resp.message if resp.code.to_i >= 300
 
@@ -111,6 +107,8 @@ def update_check(id, conclusion, output)
     resp = @http.patch(path, body.to_json, @headers)
     puts "update_check response"
     puts resp.body
+    puts resp.body[:output]
+    puts resp.body[:output][:annotations_url]
 
     raise resp.message if resp.code.to_i >= 300
   end
