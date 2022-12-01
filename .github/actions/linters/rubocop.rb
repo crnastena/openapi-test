@@ -111,7 +111,7 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  puts "annotations_url: #{data["output"]["annotations_url"]}" unless data.nil?
+  puts "annotations_url: #{data["output"]["annotations_url"]}\n" unless data.nil?
 end
 
 # get list of PR files to pass to rubocop
