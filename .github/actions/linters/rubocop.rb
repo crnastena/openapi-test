@@ -256,7 +256,7 @@ def run
     update_check_ran = true
 
     if conclusion == "failure"
-      raise "Rubocop found offenses"
+      raise "Rubocop found #{count} offenses."
     end
   rescue StandardError
     unless update_check_ran
