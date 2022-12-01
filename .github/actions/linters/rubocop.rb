@@ -249,7 +249,6 @@ def run
     output = {
       title: @check_name,
       summary: "#{count} offense(s) found",
-      text: "#{count} offense(s) found (text)",
       "annotations" => annotations,
     }
 
