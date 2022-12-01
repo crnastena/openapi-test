@@ -19,7 +19,7 @@ require "time"
 @check_name = "Rubocop"
 
 @annotation_levels = {
-  "refactor" => "notice", # "failure",
+  "refactor" => "failure",
   "convention" => "failure", # "notice",
   "warning" => "warning",
   "error" => "failure",
