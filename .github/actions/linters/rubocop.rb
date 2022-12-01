@@ -209,7 +209,7 @@ def run_rubocop
         messages << ("#{path}:#{offense["location"]["line"]}:#{offense["location"]["column"]}: #{sev}: " +
                      " #{cor} #{offense["cop_name"]}: #{message}\n")
 
-        annotation["raw_details"] = message
+        annotation["raw_details"] = offense
         annotations.push(annotation)
 
         count += 1
@@ -256,9 +256,9 @@ def run
     update_check(id, conclusion, output)
     update_check_ran = true
 
-    # if conclusion == "failure"
-    #   raise "Rubocop found offenses"
-    # end
+    if conclusion == "failure"
+      raise "Rubocop found offenses"
+    end
   rescue StandardError
     unless update_check_ran
       conclusion = if @env_report_failure
