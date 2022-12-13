@@ -211,7 +211,7 @@ def run_rubocop
         messages << ("#{path}:#{offense["location"]["line"]}:#{offense["location"]["column"]}: #{sev}: " +
                      " #{cor} #{offense["cop_name"]}: #{message}\n")
 
-        annotation["raw_details"] = offense
+        annotation["raw_details"] = message
         annotations.push(annotation)
 
         count += 1
