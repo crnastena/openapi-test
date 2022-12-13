@@ -27,7 +27,7 @@ end
 
 first_file["paths"] = combined_paths
 
-FileUtils.mkdir_p(BUILD_PATH) unless File.exist?(BUILD_PATH)
+FileUtils.mkdir_p(BUILD_PATH)
 
 combined_file_path = File.join(BUILD_PATH, "combined.yaml")
 
