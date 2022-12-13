@@ -104,11 +104,11 @@ def update_check(id, conclusion, output)
       "output" => output,
     }
 
-    puts body
-
     path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
     resp = @http.patch(path, body.to_json, @headers)
     data = JSON.parse(resp.body)
+
+    puts data
 
     raise resp.message if resp.code.to_i >= 300
   end
