@@ -104,6 +104,8 @@ def update_check(id, conclusion, output)
       "output" => output,
     }
 
+    puts body
+
     path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
     resp = @http.patch(path, body.to_json, @headers)
     data = JSON.parse(resp.body)
@@ -221,7 +223,7 @@ def run_rubocop
     puts "Offenses:\n\n"
     puts messages.join("\n")
     puts "\n#{inspected_file_count} files inspected, #{offense_count} offenses detected," +
-        "#{correctable_count} offenses autocorrectable.\n"
+           "#{correctable_count} offenses autocorrectable.\n"
 
     conclusion = "neutral" unless @env_report_failure
   end
