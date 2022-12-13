@@ -108,12 +108,15 @@ def update_check(id, conclusion, output)
     resp = @http.patch(path, body.to_json, @headers)
     data = JSON.parse(resp.body)
 
-    puts data
-
     raise resp.message if resp.code.to_i >= 300
   end
 
-  puts "annotations_url: #{data["output"]["annotations_url"]}\n" unless data.nil?
+  unless data.nil?
+    puts "url: #{data["url"]}"
+    puts "html_url: #{data["html_url"]}"
+    puts "details_url: #{data["details_url"]}"
+    puts "annotations_url: #{data["output"]["annotations_url"]}\n"
+  end
 end
 
 # get list of PR files to pass to rubocop
