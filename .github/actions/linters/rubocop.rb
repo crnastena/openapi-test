@@ -136,6 +136,9 @@ def get_pr_files
     raise resp.message if resp.code.to_i >= 300
 
     data = JSON.parse(resp.body)
+
+    puts data
+
     has_data = !data.empty?
     page += 1
     data.each do |i|
@@ -151,87 +154,91 @@ def run_rubocop
   output = nil
   Dir.chdir(@env_pr_workspace) do
     files = get_pr_files
-    result = `bundle exec rubocop --format json #{files}`
-    output = JSON.parse(result)
+    if (files.empty? && @env_run_on_pr_files_only) || files.present?
+      result = `bundle exec rubocop --format json #{files}`
+      output = JSON.parse(result)
+    end
   end
 
   count = 0
   conclusion = "success"
   annotations = []
 
-  # RuboCop reports the number of errors found in "offense_count"
-  offense_count = output["summary"]["offense_count"]
-  inspected_file_count = output["summary"]["inspected_file_count"]
-  messages = []
-  correctable_count = 0
+  unless output.nil?
+    # RuboCop reports the number of errors found in "offense_count"
+    offense_count = output["summary"]["offense_count"]
+    inspected_file_count = output["summary"]["inspected_file_count"]
+    messages = []
+    correctable_count = 0
 
-  if offense_count != 0
-    output["files"].each do |file|
-      path = file["path"]
-      offenses = file["offenses"]
+    if offense_count != 0
+      output["files"].each do |file|
+        path = file["path"]
+        offenses = file["offenses"]
 
-      offenses.each do |offense|
-        severity = offense["severity"]
-        message = offense["message"]
-        start_line = offense["location"]["start_line"]
-        end_line = offense["location"]["last_line"]
-        start_column = offense["location"]["start_column"]
-        end_column = offense["location"]["last_column"]
-        annotation_level = @annotation_levels[severity]
+        offenses.each do |offense|
+          severity = offense["severity"]
+          message = offense["message"]
+          start_line = offense["location"]["start_line"]
+          end_line = offense["location"]["last_line"]
+          start_column = offense["location"]["start_column"]
+          end_column = offense["location"]["last_column"]
+          annotation_level = @annotation_levels[severity]
 
-        conclusion = "failure" if annotation_level == "failure"
+          conclusion = "failure" if annotation_level == "failure"
 
-        # Create a new annotation for each error
-        annotation = {
-          "path" => path,
-          "start_line" => start_line,
-          "end_line" => end_line,
-          annotation_level: annotation_level,
-          "message" => message,
-        }
+          # Create a new annotation for each error
+          annotation = {
+            "path" => path,
+            "start_line" => start_line,
+            "end_line" => end_line,
+            annotation_level: annotation_level,
+            "message" => message,
+          }
 
-        # Annotations only support start and end columns on the same line
-        if start_line == end_line
-          annotation["start_column"] = start_column
-          annotation["end_column"] = end_column
+          # Annotations only support start and end columns on the same line
+          if start_line == end_line
+            annotation["start_column"] = start_column
+            annotation["end_column"] = end_column
+          end
+
+          sev = case severity
+            when "convention"
+              "C"
+            when "warning"
+              "W"
+            else
+              "U"
+            end
+          cor = if offense["correctable"]
+              correctable_count += 1
+              "[Correctable]"
+            else
+              ""
+            end
+
+          messages << ("#{path}:#{offense["location"]["line"]}:#{offense["location"]["column"]}: #{sev}: " +
+                       " #{cor} #{offense["cop_name"]}: #{message}\n")
+
+          annotation["raw_details"] = message
+          annotations.push(annotation)
+
+          count += 1
         end
-
-        sev = case severity
-          when "convention"
-            "C"
-          when "warning"
-            "W"
-          else
-            "U"
-          end
-        cor = if offense["correctable"]
-            correctable_count += 1
-            "[Correctable]"
-          else
-            ""
-          end
-
-        messages << ("#{path}:#{offense["location"]["line"]}:#{offense["location"]["column"]}: #{sev}: " +
-                     " #{cor} #{offense["cop_name"]}: #{message}\n")
-
-        annotation["raw_details"] = message
-        annotations.push(annotation)
-
-        count += 1
       end
+
+      # Print offenses
+      puts "Inspecting #{inspected_file_count} files."
+      puts "Offenses:\n\n"
+      puts messages.join("\n")
+      puts "\n#{inspected_file_count} files inspected, #{offense_count} offenses detected, " +
+             "#{correctable_count} offenses autocorrectable.\n"
+
+      conclusion = "neutral" unless @env_report_failure
     end
 
-    # Print offenses
-    puts "Inspecting #{inspected_file_count} files."
-    puts "Offenses:\n\n"
-    puts messages.join("\n")
-    puts "\n#{inspected_file_count} files inspected, #{offense_count} offenses detected, " +
-        "#{correctable_count} offenses autocorrectable.\n"
-
-    conclusion = "neutral" unless @env_report_failure
+    raise "Count mismatch expected #{offense_count} got #{count}" if offense_count != count
   end
-
-  raise "Count mismatch expected #{offense_count} got #{count}" if offense_count != count
 
   {
     annotations: annotations,
