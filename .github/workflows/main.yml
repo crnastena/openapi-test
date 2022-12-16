@@ -1,4 +1,4 @@
-name: Ruby Run
+name: Ruby Runner
 
 on:
   push:
