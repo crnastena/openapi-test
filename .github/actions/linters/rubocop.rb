@@ -57,10 +57,10 @@ def update_check(id, conclusion, output)
   data = nil
   max_annotations = 50
   annotations = if output.nil?
-                  []
-                else
-                  output["annotations"]
-                end
+      []
+    else
+      output["annotations"]
+    end
 
   if annotations.size > max_annotations
     # loop over annotations
@@ -112,10 +112,10 @@ def update_check(id, conclusion, output)
   end
 
   unless data.nil?
-    puts "url: #{data['url']}"
-    puts "html_url: #{data['html_url']}"
-    puts "details_url: #{data['details_url']}"
-    puts "annotations_url: #{data['output']['annotations_url']}"
+    puts "url: #{data["url"]}"
+    puts "html_url: #{data["html_url"]}"
+    puts "details_url: #{data["details_url"]}"
+    puts "annotations_url: #{data["output"]["annotations_url"]}"
   end
 end
 
@@ -137,8 +137,6 @@ def get_pr_files
 
     data = JSON.parse(resp.body)
 
-    puts data
-
     has_data = !data.empty?
     page += 1
     data.each do |i|
@@ -155,7 +153,7 @@ def run_rubocop
   Dir.chdir(@env_pr_workspace) do
     files = get_pr_files
     if (files.empty? && @env_run_on_pr_files_only) || !files.empty?
-      puts "bundle exec rubocop --format json #{files}"
+      puts "\nbundle exec rubocop --format json #{files}\n\n"
       result = `bundle exec rubocop --format json #{files}`
       output = JSON.parse(result)
     end
@@ -204,22 +202,22 @@ def run_rubocop
           end
 
           sev = case severity
-                when "convention"
-                  "C"
-                when "warning"
-                  "W"
-                else
-                  "U"
-                end
+            when "convention"
+              "C"
+            when "warning"
+              "W"
+            else
+              "U"
+            end
           cor = if offense["correctable"]
-                  correctable_count += 1
-                  "[Correctable]"
-                else
-                  ""
-                end
+              correctable_count += 1
+              "[Correctable]"
+            else
+              ""
+            end
 
-          messages << ("#{path}:#{offense['location']['line']}:#{offense['location']['column']}: #{sev}: " +
-                       " #{cor} #{offense['cop_name']}: #{message}\n")
+          messages << ("#{path}:#{offense["location"]["line"]}:#{offense["location"]["column"]}: #{sev}: " +
+                       " #{cor} #{offense["cop_name"]}: #{message}\n")
 
           annotation["raw_details"] = message
           annotations.push(annotation)
@@ -233,7 +231,7 @@ def run_rubocop
       puts "Offenses:\n\n"
       puts messages.join("\n")
       puts "\n#{inspected_file_count} files inspected, #{offense_count} offenses detected, " +
-        "#{correctable_count} offenses autocorrectable.\n"
+             "#{correctable_count} offenses autocorrectable.\n"
 
       conclusion = "neutral" unless @env_report_failure
     end
@@ -274,10 +272,10 @@ def run
   rescue StandardError
     unless update_check_ran
       conclusion = if @env_report_failure
-                     "failure"
-                   else
-                     "neutral"
-                   end
+          "failure"
+        else
+          "neutral"
+        end
       update_check(id, conclusion, nil)
     end
 
