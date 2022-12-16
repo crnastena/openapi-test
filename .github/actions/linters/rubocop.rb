@@ -129,7 +129,7 @@ def get_pr_files
 
   has_data = true
   results = []
-
+  valid_stati = ["added", "modified", "renamed", "changed"]
   while has_data
     path = "#{repo_url}?page=#{page}"
     resp = @http.get(path, @headers)
@@ -142,7 +142,7 @@ def get_pr_files
     has_data = !data.empty?
     page += 1
     data.each do |i|
-      results << i["filename"] if i["filename"]&.match?(file_pattern)
+      results << i["filename"] if i["filename"]&.match?(file_pattern) && valid_stati.include?(i["status"])
     end
   end
 
@@ -154,7 +154,7 @@ def run_rubocop
   output = nil
   Dir.chdir(@env_pr_workspace) do
     files = get_pr_files
-    if (files.empty? && @env_run_on_pr_files_only) || files.present?
+    if (files.empty? && @env_run_on_pr_files_only) || !files.empty?
       puts "bundle exec rubocop --format json #{files}"
       result = `bundle exec rubocop --format json #{files}`
       output = JSON.parse(result)
