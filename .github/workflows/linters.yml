@@ -1,0 +1,39 @@
+# linters.yml
+name: Run Linters
+
+on: [pull_request]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_WORKSPACE: ${{ github.workspace }}
+  PR_REPOSITORY: ${{ github.repository }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  RUN_ON_PR_FILES_ONLY: true
+  REPORT_FAILURE: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Rubocop with Ruby 3.0.4
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0.4'
+          bundler-cache: false
+      - name: Cache gems
+        uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-rubocop-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rubocop-
+      - name: Install gems
+        run: |
+          bundle config path vendor/bundle
+          bundle config set without 'default doc job cable storage ujs test db'
+          bundle install --jobs 4 --retry 3
+      - name: Run rubocop on changed files
+        run: |
+          ruby .github/actions/linters/rubocop.rb

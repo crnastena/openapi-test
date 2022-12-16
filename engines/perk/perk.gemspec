@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
 
-  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.3")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.4")
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
