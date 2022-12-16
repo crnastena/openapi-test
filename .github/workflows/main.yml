@@ -10,18 +10,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
-    strategy:
-      matrix:
-        ruby:
-          - '3.0.4'
+    name: Ruby 3.0.4
 
     steps:
     - uses: actions/checkout@v3
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: ${{ matrix.ruby }}
+        ruby-version: '3.0.4'
         bundler-cache: false
     - name: Run the bundle install
       run: bundle install

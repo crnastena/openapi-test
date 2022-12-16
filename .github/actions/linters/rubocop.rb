@@ -152,7 +152,7 @@ def run_rubocop
   output = nil
   Dir.chdir(@env_pr_workspace) do
     files = get_pr_files
-    if (files.empty? && @env_run_on_pr_files_only) || !files.empty?
+    if (!files.empty? && @env_run_on_pr_files_only) || files.empty?
       puts "\nbundle exec rubocop --format json #{files}\n\n"
       result = `bundle exec rubocop --format json #{files}`
       output = JSON.parse(result)
