@@ -111,7 +111,9 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  unless data.nil?
+  if annotations.empty?
+    puts "No annotations."
+  else
     puts "url: #{data['url']}"
     puts "html_url: #{data['html_url']}"
     puts "details_url: #{data['details_url']}"
@@ -152,10 +154,13 @@ def run_rubocop
   output = nil
   Dir.chdir(@env_pr_workspace) do
     files = get_pr_files
-    if (!files.empty? && @env_run_on_pr_files_only) || files.empty?
+
+    if (!files.empty? && @env_run_on_pr_files_only) || !@env_run_on_pr_files_only
       puts "\nbundle exec rubocop --format json #{files}\n\n"
       result = `bundle exec rubocop --format json #{files}`
       output = JSON.parse(result)
+    else
+      puts "skipping rubocop run, no files matching."
     end
   end
 
