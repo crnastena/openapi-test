@@ -37,4 +37,3 @@ jobs:
       - name: Run rubocop on changed files
         run: |
           ruby .github/actions/linters/rubocop.rb
-        if: github.event_name == 'pull_request'

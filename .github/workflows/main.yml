@@ -25,33 +25,6 @@ jobs:
         bundler-cache: false
     - name: Run the bundle install
       run: bundle install
-    - name: Run rubocop on changed files
-      run: |
-        echo "starting script"
-        URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
-        FILE_PATTERN="(\.r[bu]$|/bundle$|/setup$|/rails$|/rake$|/?Gemfile$|/?Rakefile$|\.gemspec$|\.rake$)"
-        FILES=""
-        FILE_SET="START"
-        PAGE=1
-        while [ ! -z "$FILE_SET" ]
-        do
-          URL_WITH_PAGE="$URL?page=$PAGE"
-          FILE_SET=$(curl -s -X GET -G $URL_WITH_PAGE | jq -r '.[] | .filename' | tr '\n' ' ')
-          if [ ! -z "$FILES" ]; then
-            FILES="$FILES $FILE_SET"
-          else
-            FILES="$FILE_SET"
-          fi
-          PAGE=`expr $PAGE + 1`
-        done
-        FILTERED_FILES=$(echo $FILES | tr ' ' '\n' | egrep -i "$FILE_PATTERN" || true)
-        if [ ! -z "$FILTERED_FILES" ]; then
-          echo "rb file changed!!"
-          echo $FILTERED_FILES | xargs rubocop --color --force-exclusion
-        else
-          echo "no rb files changed!!"
-        fi
-      if: github.event_name == 'pull_request'
     - name: Run rspec
       run: bundle exec rspec
     - name: Run the rspec-openapi task
