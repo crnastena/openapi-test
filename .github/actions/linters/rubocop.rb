@@ -111,7 +111,9 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  if !annotations.empty?
+  if annotations.empty?
+    puts "No annotations."
+  else
     puts "url: #{data['url']}"
     puts "html_url: #{data['html_url']}"
     puts "details_url: #{data['details_url']}"
