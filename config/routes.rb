@@ -19,8 +19,7 @@ Rails.application.routes.draw do
       end
 
       resources :greetings, only: [:index]
-      resources :movies, only: [:index]
-      resources :testers, only: [:index]
+      resources :movie, only: [:index]
 
       # does not work when running engine specs from project app.
       # it still works when running just project app specs.
