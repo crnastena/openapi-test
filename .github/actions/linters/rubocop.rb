@@ -111,7 +111,7 @@ def update_check(id, conclusion, output)
     raise resp.message if resp.code.to_i >= 300
   end
 
-  unless data.nil?
+  if !annotations.empty?
     puts "url: #{data['url']}"
     puts "html_url: #{data['html_url']}"
     puts "details_url: #{data['details_url']}"
@@ -157,6 +157,8 @@ def run_rubocop
       puts "\nbundle exec rubocop --format json #{files}\n\n"
       result = `bundle exec rubocop --format json #{files}`
       output = JSON.parse(result)
+    else
+      puts "skipping rubocop run, no files matching."
     end
   end
 
