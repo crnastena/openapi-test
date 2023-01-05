@@ -64,7 +64,7 @@ def update_check(id, conclusion, output)
 
   if annotations.size > max_annotations
     # loop over annotations
-    pages = annotations.size / 50
+    pages = annotations.size / max_annotations
     page = 1
     while page <= pages
       current_annotations = annotations.take(max_annotations)
@@ -72,7 +72,6 @@ def update_check(id, conclusion, output)
       page_output = {
         title: output[:title],
         summary: output[:summary],
-        text: output[:text],
         "annotations" => current_annotations,
       }
       body = {
@@ -90,7 +89,11 @@ def update_check(id, conclusion, output)
       path = "/repos/#{@env_pr_repository}/check-runs/#{id}"
       resp = @http.patch(path, body.to_json, @headers)
       data = JSON.parse(resp.body)
-      raise resp.message if resp.code.to_i >= 300
+
+      if resp.code.to_i >= 300
+        puts resp
+        raise resp.message
+      end
 
       page += 1
     end
@@ -108,7 +111,10 @@ def update_check(id, conclusion, output)
     resp = @http.patch(path, body.to_json, @headers)
     data = JSON.parse(resp.body)
 
-    raise resp.message if resp.code.to_i >= 300
+    if resp.code.to_i >= 300
+      puts resp
+      raise resp.message
+    end
   end
 
   if annotations.empty?
