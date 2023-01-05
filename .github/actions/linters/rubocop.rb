@@ -72,7 +72,6 @@ def update_check(id, conclusion, output)
       page_output = {
         title: output[:title],
         summary: output[:summary],
-        text: output[:text],
         "annotations" => current_annotations,
       }
       body = {
